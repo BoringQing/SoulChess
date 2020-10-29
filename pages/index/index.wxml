@@ -1,0 +1,39 @@
+<!--index.wxml-->
+<view class="container">
+  <view class="player_info">
+    <view class="player-header">
+      <image src="../../images/kana.jpg" alt="我老婆"></image>
+      <view class="rank_container">
+        <text class="rank_level">LV 8</text>
+        <text class="rank_score">刘青</text>
+      </view>
+      <view class="time_container">
+        <text class="all_time">总时长：15:00</text>
+        <text class="cur_time">步时：0:30</text>
+      </view>
+      <view class="ci_btn">刺</view>
+      <view class="game_set">
+        <mp-icon icon="more" color="black" size="{{25}}"></mp-icon>
+        <mp-icon icon="setting" color="black" size="{{25}}" style="display:none;"></mp-icon>
+        <mp-icon icon="back2" color="black" size="{{25}}" style="display:none;"></mp-icon>
+      </view>
+      <view class="talk_set">
+        <mp-icon icon="pencil" color="black" size="{{25}}"></mp-icon>
+      </view>
+      
+    </view>
+  </view>
+  <view class="chess_info">
+    <view class="canvas_container" id="canvas_container">
+    
+      <canvas  type="2d" style="width:{{canvasWidth}}px;height:{{canvasHeight}}px;" id="chess_board" bindtap="chessMove"></canvas>
+     
+    </view>
+  </view>
+  <view class="user_info">
+    <view class="user-header">
+      <image src="../../images/kana.jpg" alt="我老婆"></image>
+    </view>
+  </view>
+  
+</view>
