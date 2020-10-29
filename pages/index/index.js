@@ -20,6 +20,7 @@ Page({
       [412,881],//枪
       [465,5]//神
     ],
+    arcPos: null,
     chessBlockWidth: 0, // 一个方块的宽度
     chessBlockHeight: 0, // 一个方块的高度
     selectStatus: 'notSelected', //默认为未选中状态
@@ -116,7 +117,7 @@ Page({
                   this.data.userArray[i] = new Array(9)
             }
             this.data.userArray = [
-                  [0,0,0,0,8,0,1,0,0],
+                  [0,0,0,0,8,0,2,0,0],
                   [0,0,4,0,0,3,0,0,0]
             ]
             this.data.globalArray[7] = this.data.userArray[0]
@@ -190,6 +191,7 @@ Page({
                         this.showChessMove(chessDefined)
                   }
                   this.data.selectStatus = 'notSelected'
+                  this.recoveryAlert()
             }
             
       },
@@ -410,11 +412,118 @@ Page({
                         arcPos[j][1] = startPointY++
                  }
                  for(let drawArr in arcPos){
-                        
+                       let width = this.data.canvas._width / 9
+                       let height = this.data.canvas._height / 9
+                       let x = arcPos[drawArr][0]
+                       let y = arcPos[drawArr][1]
+                        this.data.ctx.beginPath()
+                        this.data.ctx.arc(width * x + width / 2,height * y + height / 2,5,0,2 * Math.PI)
+                        this.data.ctx.fillStyle = '#99ccff'
+                        this.data.ctx.fill()
                  }
+                 this.data.arcPos = arcPos
+            }else if(chessDefined == 2){
+                  let startPointX = this.data.lastChessX - 1
+                  let endPointX = this.data.lastChessX + 1
+                  let startPointY = this.data.lastChessY - 1
+                  let endPointY = this.data.lastChessY + 1
+                  let downStartPointZ = [this.data.lastChessX - 2][this.data.lastChessY - 2]
+                  let upStartPointZ = [this.data.lastChessX - 2][this.data.lastChessY + 2]
+                  let downEndPointZ = [this.data.lastChessX + 2][this.data.lastChessY + 2]
+                  let upEndPointZ = [this.data.lastChessX + 2][this.data.lastChessY - 2]
+                  let arraySecondStart
+                  if(startPointX < 0){
+                        startPointX = 0
+                  }
+                  if(endPointX > 8){
+                        endPointX = 8
+                  }
+                  if(startPointY < 0){
+                        startPointY = 0
+                  }
+                  if(endPointY > 8){
+                        endPointY = 8
+                  }
+                  if(downStartPointZ[0] < 0 ){
+                        downStartPointZ[0] = 0
+                  }
+                  if(downStartPointZ[1] < 0){
+                        downStartPointZ[1] = 0
+                  }
+                  if(upStartPointZ[0] < 0){
+                        upStartPointZ[0] = 0
+                  }
+                  if(upStartPointZ[1] > 8){
+                        upStartPointZ[1] = 8
+                  }
+                  if(downEndPointZ[0] > 8){
+                        downEndPointZ[0] = 8
+                  }
+                  if(downEndPointZ[1] > 8){
+                        downEndPointZ[1] = 8
+                  }
+                  if(upEndPointZ[0] > 8){
+                        upEndPointZ[0] = 8
+                  }
+                  if(upEndPointZ[1] < 0){
+                        upEndPointZ[1] = 0
+                  }
+                  let xDiff = endPointX - startPointX
+                  let yDiff = endPointY - startPointY
+                  for(let i = 0;i <= xDiff;i++){
+                        if(this.data.globalArray[this.data.lastChessY][startPointX] != 0){
+                              startPointX++
+                              continue
+                        }
+                        arcPos[i] = new Array()
+                        arcPos[i][0] = startPointX++
+                        arcPos[i][1] = this.data.lastChessY
+                  }
+                  arraySecondStart = arcPos.length
+                 for(let j = arraySecondStart;j <= yDiff + arraySecondStart;j++){
+                        if(this.data.globalArray[startPointY][this.data.lastChessX] !=0){
+                           startPointY++
+                           continue   
+                        }
+                        arcPos[j] = new Array()
+                        arcPos[j][0] = this.data.lastChessX
+                        arcPos[j][1] = startPointY++
+                 }
+                 arraySecondStart = arcPos.length
+                 
+                 for(let drawArr in arcPos){
+                       let width = this.data.canvas._width / 9
+                       let height = this.data.canvas._height / 9
+                       let x = arcPos[drawArr][0]
+                       let y = arcPos[drawArr][1]
+                        this.data.ctx.beginPath()
+                        this.data.ctx.arc(width * x + width / 2,height * y + height / 2,5,0,2 * Math.PI)
+                        this.data.ctx.fillStyle = '#99ccff'
+                        this.data.ctx.fill()
+                 }
+                 this.data.arcPos = arcPos
             }
-            console.log(arcPos);
-            
-            // this.data.ctx.arc()
+      },
+      /**
+       * 回收 渲染提示 
+       * 当棋子为未选中状态，同时渲染数组存在值的同时 回收之前的提示
+       * @author qing
+       * @code by 2020/10/29
+       */
+      recoveryAlert(){
+            if(this.data.selectStatus == 'notSelected' && this.data.arcPos != null){
+                  let blockWidth = this.data.canvas._width / 9
+                  let blockHeight = this.data.canvas._height / 9
+                  for(let cur in this.data.arcPos){
+                        if(this.data.chessX == this.data.arcPos[cur][0] && this.data.chessY == this.data.arcPos[cur][1]){
+                              continue
+                        }
+                        let bgImg = this.data.canvas.createImage()
+                        bgImg.onload = () =>{
+                              this.data.ctx.drawImage(bgImg,319 / 9 * this.data.arcPos[cur][0],319 / 9 * this.data.arcPos[cur][1],36,36,this.data.arcPos[cur][0] * blockWidth,this.data.arcPos[cur][1] * blockHeight,blockWidth + 0.5,blockHeight + 0.3)
+                        }
+                        bgImg.src = '../../images/chessBoard.png'
+                  }
+            }
       }
 })
