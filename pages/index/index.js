@@ -117,8 +117,8 @@ Page({
                   this.data.userArray[i] = new Array(9)
             }
             this.data.userArray = [
-                  [0,0,0,0,8,0,2,0,0],
-                  [0,0,4,0,0,3,0,0,0]
+                  [0,2,0,6,8,0,1,0,0],
+                  [0,0,4,0,0,3,7,0,0]
             ]
             this.data.globalArray[7] = this.data.userArray[0]
             this.data.globalArray[8] = this.data.userArray[1]
@@ -359,149 +359,69 @@ Page({
             //将之前存储的数组清0  移动后的坐标 存储数组中的相应位置
             this.data.globalArray[this.data.lastChessY][this.data.lastChessX] = 0
             this.data.globalArray[this.data.chessY][this.data.chessX] = chessDefined
-            console.log(this.data.globalArray)
       },
       /**
        *  棋子为选中状态时，对用户的提示 
        *  通过一个 二维 数组 记录 需要渲染提示的  位置
        *  需要考虑边界问题 ，及 友军棋子不必渲染 
-       *  设置两个for循环解决X 是为了保持数组的纯净。估计上速度并不会有明显缺陷。
        * @author qing
        * @code by 2020/10/27
        * @param 棋子定义的属性
        */
       selectAlert(chessDefined){
-            let arcPos = []
+            let res = []
             if(chessDefined == 1){
-                  let startPointX = this.data.lastChessX - 2
-                  let endPointX = this.data.lastChessX + 2
-                  let startPointY = this.data.lastChessY - 2
-                  let endPointY = this.data.lastChessY + 2
-                  let arraySecondStart
-                  if(startPointX < 0){
-                        startPointX = 0
-                  }
-                  if(endPointX > 8){
-                        endPointX = 8
-                  }
-                  if(startPointY < 0){
-                        startPointY = 0
-                  }
-                  if(endPointY > 8){
-                        endPointY = 8
-                  }
-                  let xDiff = endPointX - startPointX
-                  let yDiff = endPointY - startPointY
-                  for(let i = 0;i <= xDiff;i++){
-                        if(this.data.globalArray[this.data.lastChessY][startPointX] != 0){
-                              startPointX++
-                              continue
-                        }
-                        arcPos[i] = new Array()
-                        arcPos[i][0] = startPointX++
-                        arcPos[i][1] = this.data.lastChessY
-                  }
-                  arraySecondStart = arcPos.length
-                 for(let j = arraySecondStart;j <= yDiff + arraySecondStart;j++){
-                        if(this.data.globalArray[startPointY][this.data.lastChessX] !=0){
-                           startPointY++
-                           continue   
-                        }
-                        arcPos[j] = new Array()
-                        arcPos[j][0] = this.data.lastChessX
-                        arcPos[j][1] = startPointY++
-                 }
-                 for(let drawArr in arcPos){
-                       let width = this.data.canvas._width / 9
-                       let height = this.data.canvas._height / 9
-                       let x = arcPos[drawArr][0]
-                       let y = arcPos[drawArr][1]
-                        this.data.ctx.beginPath()
-                        this.data.ctx.arc(width * x + width / 2,height * y + height / 2,5,0,2 * Math.PI)
-                        this.data.ctx.fillStyle = '#99ccff'
-                        this.data.ctx.fill()
-                 }
-                 this.data.arcPos = arcPos
+                  res = this.rowSelectAlert(2)
+                  res = res.concat(this.colSelectAlert(2))
+                  this.drawAlert(res)
+                  this.data.arcPos = res
             }else if(chessDefined == 2){
-                  let startPointX = this.data.lastChessX - 1
-                  let endPointX = this.data.lastChessX + 1
-                  let startPointY = this.data.lastChessY - 1
-                  let endPointY = this.data.lastChessY + 1
-                  let downStartPointZ = [this.data.lastChessX - 2][this.data.lastChessY - 2]
-                  let upStartPointZ = [this.data.lastChessX - 2][this.data.lastChessY + 2]
-                  let downEndPointZ = [this.data.lastChessX + 2][this.data.lastChessY + 2]
-                  let upEndPointZ = [this.data.lastChessX + 2][this.data.lastChessY - 2]
-                  let arraySecondStart
-                  if(startPointX < 0){
-                        startPointX = 0
-                  }
-                  if(endPointX > 8){
-                        endPointX = 8
-                  }
-                  if(startPointY < 0){
-                        startPointY = 0
-                  }
-                  if(endPointY > 8){
-                        endPointY = 8
-                  }
-                  if(downStartPointZ[0] < 0 ){
-                        downStartPointZ[0] = 0
-                  }
-                  if(downStartPointZ[1] < 0){
-                        downStartPointZ[1] = 0
-                  }
-                  if(upStartPointZ[0] < 0){
-                        upStartPointZ[0] = 0
-                  }
-                  if(upStartPointZ[1] > 8){
-                        upStartPointZ[1] = 8
-                  }
-                  if(downEndPointZ[0] > 8){
-                        downEndPointZ[0] = 8
-                  }
-                  if(downEndPointZ[1] > 8){
-                        downEndPointZ[1] = 8
-                  }
-                  if(upEndPointZ[0] > 8){
-                        upEndPointZ[0] = 8
-                  }
-                  if(upEndPointZ[1] < 0){
-                        upEndPointZ[1] = 0
-                  }
-                  let xDiff = endPointX - startPointX
-                  let yDiff = endPointY - startPointY
-                  for(let i = 0;i <= xDiff;i++){
-                        if(this.data.globalArray[this.data.lastChessY][startPointX] != 0){
-                              startPointX++
+                  res = this.rowSelectAlert(1)
+                  res = res.concat(this.colSelectAlert(1))
+                  res = res.concat(this.biasSelectAlert(2))
+                  this.drawAlert(res)
+                  this.data.arcPos = res
+            }else if(chessDefined == 3){
+                  return;
+            }else if(chessDefined == 4){
+                  res = this.rowSelectAlert(1)
+                  res = res.concat(this.colSelectAlert(1))
+                  this.drawAlert(res)
+                  this.data.arcPos = res
+            }else if(chessDefined == 5){
+                  res = this.rowSelectAlert(1)
+                  res = res.concat(this.colSelectAlert(1))
+                  res = res.concat(this.biasSelectAlert(1))
+                  this.drawAlert(res)
+                  this.data.arcPos = res
+            }else if(chessDefined == 6){
+                  res = this.rowSelectAlert(8)
+                  res = res.concat(this.colSelectAlert(1))
+                  this.drawAlert(res)
+                  this.data.arcPos = res
+            }else if(chessDefined == 7){
+                  res = this.rowSelectAlert(1)
+                  let arcPos = []
+                  let startY = this.data.lastChessY
+                  for(let i = 0;i <= this.data.lastChessY;i++){
+                        if(this.data.globalArray[startY][this.data.lastChessX] != 0){
+                              startY--
                               continue
                         }
                         arcPos[i] = new Array()
-                        arcPos[i][0] = startPointX++
-                        arcPos[i][1] = this.data.lastChessY
+                        arcPos[i][0] = this.data.lastChessX
+                        arcPos[i][1] = startY-- 
                   }
-                  arraySecondStart = arcPos.length
-                 for(let j = arraySecondStart;j <= yDiff + arraySecondStart;j++){
-                        if(this.data.globalArray[startPointY][this.data.lastChessX] !=0){
-                           startPointY++
-                           continue   
-                        }
-                        arcPos[j] = new Array()
-                        arcPos[j][0] = this.data.lastChessX
-                        arcPos[j][1] = startPointY++
-                 }
-                 arraySecondStart = arcPos.length
-                 
-                 for(let drawArr in arcPos){
-                       let width = this.data.canvas._width / 9
-                       let height = this.data.canvas._height / 9
-                       let x = arcPos[drawArr][0]
-                       let y = arcPos[drawArr][1]
-                        this.data.ctx.beginPath()
-                        this.data.ctx.arc(width * x + width / 2,height * y + height / 2,5,0,2 * Math.PI)
-                        this.data.ctx.fillStyle = '#99ccff'
-                        this.data.ctx.fill()
-                 }
-                 this.data.arcPos = arcPos
+                  res = res.concat(arcPos)
+                  this.drawAlert(res)
+                  this.data.arcPos = res
+            }else if(chessDefined == 8){
+                  res = this.rowSelectAlert(3)
+                  res = res.concat(this.colSelectAlert(3))
+                  res = res.concat(this.biasSelectAlert(3))
+                  console.log(res)
+                  this.drawAlert(res)
+                  this.data.arcPos = res
             }
       },
       /**
@@ -523,6 +443,156 @@ Page({
                               this.data.ctx.drawImage(bgImg,319 / 9 * this.data.arcPos[cur][0],319 / 9 * this.data.arcPos[cur][1],36,36,this.data.arcPos[cur][0] * blockWidth,this.data.arcPos[cur][1] * blockHeight,blockWidth + 0.5,blockHeight + 0.3)
                         }
                         bgImg.src = '../../images/chessBoard.png'
+                  }
+            }
+      },
+      /**
+       * 横向渲染
+       * @author qing
+       * @code by 2020/10/30
+       * @param 可移动的步数
+       */
+      rowSelectAlert(steps){
+            let arcPos = []
+            let startPointX = this.data.lastChessX - steps
+            let endPointX = this.data.lastChessX + steps
+            if(startPointX < 0){
+                  startPointX = 0
+            }
+            if(endPointX > 8){
+                  endPointX = 8
+            }
+            let xDiff = endPointX - startPointX
+            for(let i = 0;i <= xDiff;i++){
+                  if(this.data.globalArray[this.data.lastChessY][startPointX] != 0){
+                        startPointX++
+                        continue
+                  }
+                  arcPos[i] = new Array()
+                  arcPos[i][0] = startPointX++
+                  arcPos[i][1] = this.data.lastChessY
+            }
+            return arcPos
+      },
+      /**
+       * 竖向渲染
+       * @author qing
+       * @code by 2020/10/30
+       * @param 可移动的步数
+       */
+      colSelectAlert(steps){
+            let arcPos = []
+            let startPointY = this.data.lastChessY - steps
+            let endPointY = this.data.lastChessY + steps
+            if(startPointY < 0){
+                  startPointY = 0
+            }
+            if(endPointY > 8){
+                  endPointY = 8
+            }
+            let yDiff = endPointY - startPointY
+            for(let j = 0;j <= yDiff;j++){
+                  if(this.data.globalArray[startPointY][this.data.lastChessX] !=0){
+                     startPointY++
+                     continue   
+                  }
+                  arcPos[j] = new Array()
+                  arcPos[j][0] = this.data.lastChessX
+                  arcPos[j][1] = startPointY++
+           }
+           return arcPos
+      },
+      /**
+       * 斜线渲染
+       * @author qing
+       * @code by 2020/10/30
+       * @param 可移动步数
+       */
+      biasSelectAlert(steps){
+            let arcPos = []
+            let downStartPointZ = [this.data.lastChessX - steps,this.data.lastChessY - steps]
+            let upStartPointZ = [this.data.lastChessX - steps,this.data.lastChessY + steps]
+            let downEndPointZ = [this.data.lastChessX + steps,this.data.lastChessY + steps]
+            let upEndPointZ = [this.data.lastChessX + steps,this.data.lastChessY - steps]
+            if(downStartPointZ[0] < 0 ){
+                  downStartPointZ[1] = downStartPointZ[1] + Math.abs(downStartPointZ[0])
+                  downStartPointZ[0] = 0
+            }
+            if(downStartPointZ[1] < 0){
+                  downStartPointZ[0] = downStartPointZ[0] + Math.abs(downStartPointZ[1])
+                  downStartPointZ[1] = 0
+            }
+            if(upStartPointZ[0] < 0){
+                  upStartPointZ[1] = upStartPointZ[1] - Math.abs(upStartPointZ[0])
+                  upStartPointZ[0] = 0
+            }
+            if(upStartPointZ[1] > 8){
+                  upStartPointZ[0] = upStartPointZ[0] + Math.abs(upStartPointZ[1] - 8)
+                  upStartPointZ[1] = 8
+            }
+            if(downEndPointZ[0] > 8){
+                  downEndPointZ[1] = downEndPointZ[1] - Math.abs(downEndPointZ[0] - 8)
+                  downEndPointZ[0] = 8
+            }
+            if(downEndPointZ[1] > 8){
+                  downEndPointZ[0] = downEndPointZ[0] - Math.abs(downEndPointZ[1] - 8)
+                  downEndPointZ[1] = 8
+            }
+            if(upEndPointZ[0] > 8){
+                  upEndPointZ[1] = upEndPointZ[1] + Math.abs(upEndPointZ[0] - 8)
+                  upEndPointZ[0] = 8
+            }
+            if(upEndPointZ[1] < 0){
+                  upEndPointZ[0] = upEndPointZ[0] - Math.abs(upEndPointZ[1])
+                  upEndPointZ[1] = 0
+            }
+            //只需一个元素即可 数据已经经过处理
+            let downDiff = downEndPointZ[0] - downStartPointZ[0] 
+            let upDiff = upEndPointZ[0] - upStartPointZ[0]
+            for(let i = 0;i <= downDiff;i++){
+                  if(this.data.globalArray[downStartPointZ[1]][downStartPointZ[0]] != 0){
+                        if(downStartPointZ[0] < 8 && downStartPointZ[1] < 8){
+                              downStartPointZ[0]++
+                              downStartPointZ[1]++
+                        }
+                        continue     
+                  }
+                  arcPos[i] = new Array()
+                  arcPos[i][0] = downStartPointZ[0]++
+                  arcPos[i][1] = downStartPointZ[1]++
+            }
+            let secondStart = arcPos.length
+            for(let i = secondStart;i <= upDiff + secondStart;i++){
+                  if(this.data.globalArray[upStartPointZ[1]][upStartPointZ[0]] != 0){
+                        if(upStartPointZ[0] < 8 && upStartPointZ[1] > 0){
+                              upStartPointZ[0]++
+                              upStartPointZ[1]--
+                        }
+                        continue
+                  }
+                  arcPos[i] = new Array()
+                  arcPos[i][0] = upStartPointZ[0]++
+                  arcPos[i][1] = upStartPointZ[1]--
+            }
+            return arcPos
+      },
+      /**
+       *  根据arcPos绘制渲染区域
+       *  @author qing
+       *  @code by 2020/10/30
+       *  @param arcPos数组
+       */
+      drawAlert(arcPos){
+            let width = this.data.canvas._width / 9
+            let height = this.data.canvas._height / 9
+            if(arcPos != null){
+                  for(let drawArr in arcPos){ 
+                        let x = arcPos[drawArr][0]
+                        let y = arcPos[drawArr][1]
+                         this.data.ctx.beginPath()
+                         this.data.ctx.arc(width * x + width / 2,height * y + height / 2,5,0,2 * Math.PI)
+                         this.data.ctx.fillStyle = '#99ccff'
+                         this.data.ctx.fill()
                   }
             }
       }
