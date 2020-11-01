@@ -11,3 +11,9 @@
   获取到arcPos之后，把计算出该渲染的第X个方块，第Y个方块的中心点进行渲染。通过canvas.arc() 进行小圆点渲染即可。
 - 点击移动之后渲染为原画布
 > 读取arcPos数组进行循环渲染即可
+
+### 目前进度
+![cur1](https://raw.githubusercontent.com/BoringQing/SoulChess/main/1.png)
+![cur2](https://raw.githubusercontent.com/BoringQing/SoulChess/main/2.png)
+
+到棋子的斜线与障碍物的判断，只实现了渲染，没实现移动方案。
